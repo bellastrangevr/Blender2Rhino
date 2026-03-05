@@ -92,7 +92,11 @@ class BRB_PT_Main(Panel):
         if export.export_format == 'OBJ':
             col.operator("brb.export_obj", text="Export for Rhino (OBJ)", icon='EXPORT')
         else:
-            col.operator("brb.export_3dm", text="Export for Rhino (.3DM)", icon='EXPORT')
+            from .. import rhino3dm_available
+            if rhino3dm_available():
+                col.operator("brb.export_3dm", text="Export for Rhino (.3DM)", icon='EXPORT')
+            else:
+                col.operator("brb.install_rhino3dm", text="Install rhino3dm to enable .3DM export", icon='IMPORT')
 
         layout.separator()
 

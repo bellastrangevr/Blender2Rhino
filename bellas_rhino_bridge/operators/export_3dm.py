@@ -1,31 +1,21 @@
 """
 .3DM export operator using the rhino3dm library.
-Falls back gracefully if rhino3dm is not available.
+rhino3dm is installed on demand via the addon preferences (one-click install).
 Objects are placed on named Rhino layers matching their jewelry type tag.
 """
 import bpy
 import os
-import sys
 from bpy.types import Operator
 from ..properties.props import LAYER_MAP
 
-# Path to the bundled vendor folder
-_VENDOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'vendor')
-
 
 def _import_rhino3dm():
-    """Try to import rhino3dm; add vendor path first if needed."""
+    """Import rhino3dm (vendor path already in sys.path via __init__)."""
     try:
         import rhino3dm
         return rhino3dm
     except ImportError:
-        if _VENDOR_PATH not in sys.path:
-            sys.path.insert(0, _VENDOR_PATH)
-        try:
-            import rhino3dm
-            return rhino3dm
-        except ImportError:
-            return None
+        return None
 
 
 def _blender_mesh_to_rhino(obj, rhino3dm, scale):
@@ -78,8 +68,7 @@ class BRB_OT_Export3DM(Operator):
         if rhino3dm is None:
             self.report(
                 {'ERROR'},
-                "rhino3dm library not found. Install it via pip or place it in the vendor/ folder. "
-                "Use OBJ export instead as a fallback."
+                "rhino3dm not installed. Go to Edit > Preferences > Add-ons > Blender2Rhino and click 'Install rhino3dm'."
             )
             return {'CANCELLED'}
 
